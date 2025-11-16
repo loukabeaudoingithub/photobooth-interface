@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Photobooth - Trouver votre groupe</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(to bottom, #e0e0ff, #e0e0ff);
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        select, button {
+            font-size: 1.5em;
+            padding: 10px;
+            margin-top: 20px;
+            width: 80%;
+            max-width: 400px;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #357bd8;
+        }
+    </style>
+</head>
+<body>
+    <h1>📸 Sélectionnez votre groupe</h1>
+    <p>Utilisez la liste ci-dessous pour retrouver vos photos :</p>
+
+    <select id="groupSelect">
+        <option value="">-- Choisissez votre groupe --</option>
+    </select>
+    <br>
+    <button onclick="goToGroup()">Voir mon groupe</button>
+    <button onclick="loadGroups()">🔄 Actualiser la liste</button>
+<button id="fullscreenToggle" title="Plein écran" style="
+  position: fixed;
+  bottom: 200px;
+  right: 20px;
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff00;
+  border-radius: 0%;
+  width: 0px;
+  height: 0px;
+  font-size: 1.2em;
+  cursor: pointer;
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+">
+  ⛶
+</button>
+    <script>
+        async function loadGroups() {
+            try {
+                const response = await fetch('/groups.json');
+                const groups = await response.json();
+                const select = document.getElementById('groupSelect');
+                select.innerHTML = '<option value="">-- Choisissez votre groupe --</option>';
+                groups.forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group.name;
+                    option.textContent = group.name;
+                    select.appendChild(option);
+                });
+            } catch (err) {
+                alert("Impossible de charger les groupes.");
+            }
+        }
+
+        function goToGroup() {
+            const groupName = document.getElementById('groupSelect').value;
+            if (groupName) {
+                window.location.href = `/group/${encodeURIComponent(groupName)}`;
+            } else {
+                alert("Veuillez choisir un groupe.");
+            }
+        }
+document.getElementById('fullscreenToggle').addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => {
+      alert(`Erreur plein écran : ${err.message}`);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+});
+        loadGroups();
+        
+    </script>
+</body>
+</html>
